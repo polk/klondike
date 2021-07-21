@@ -4,18 +4,18 @@ Handle screen capture procedures.
 
 """
 
-from PIL import Image, ImageGrab
+import glob
+import os
+import time
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import glob
-import time
-import cv2
-import os
+from PIL import Image, ImageGrab
 
 from directkeys import clic
 from misc import *
-from ocr import predict, apply_threshold
+from ocr import predict
 
 
 def load_template(filename):
@@ -43,9 +43,9 @@ BBOX_DECK = (1121, 92, 1300, 136)
 def generate_template_card(center=(562, 197), radius=10, filename="card.png"):
     screen = np.array(ImageGrab.grab(BBOX_BOARD))
     template = screen[
-        center[1] - radius : center[1] + radius,
-        center[0] - radius : center[0] + radius,
-        :]
+               center[1] - radius: center[1] + radius,
+               center[0] - radius: center[0] + radius,
+               :]
     Image.fromarray(template).save(os.path.join(TEMPLATE_FOLDER, filename))
 
 
@@ -65,7 +65,6 @@ def generate_samples(rounds):
 
 
 def detect_color(image):
-
     def keep_maximum(output):
         maximum = -1
         for element in list(output):
@@ -82,7 +81,6 @@ def detect_color(image):
 
 
 def locate_cards(threshold=.95, margin=10, plot=False):
-
     screen = np.array(ImageGrab.grab(BBOX_BOARD))
 
     matches = cv2.matchTemplate(screen, TEMPLATE_CARD, cv2.TM_CCOEFF_NORMED)
@@ -98,12 +96,12 @@ def locate_cards(threshold=.95, margin=10, plot=False):
             x1, x2 = pt[0] + 8, pt[0] + 29
             y1, y2 = pt[1] - 122, pt[1] - 102
             image_letter = screen[y1:y2, x1:x2, :]
-            image_color = screen[y2-2:y2+15, x1+2:x2, :]
+            image_color = screen[y2 - 2:y2 + 15, x1 + 2:x2, :]
 
             # detect column
             min_dist = None
             stack = None
-            for i, dist in enumerate(map(lambda x: (x - x1)**2, STACK_POSITIONS)):
+            for i, dist in enumerate(map(lambda x: (x - x1) ** 2, STACK_POSITIONS)):
                 if i == 0 or dist < min_dist:
                     stack = i
                     min_dist = dist
@@ -123,7 +121,6 @@ def locate_cards(threshold=.95, margin=10, plot=False):
 
 
 def detect_cards(threshold=.95, margin=10, plot=False):
-
     located_cards = locate_cards(threshold, margin)
     detected_cards = []
 
@@ -131,10 +128,10 @@ def detect_cards(threshold=.95, margin=10, plot=False):
 
         detected_cards.append(
             (stack,
-            predict(image_letter),
-            detect_color(image_color),
-            x + BBOX_BOARD[0],
-            y + BBOX_BOARD[1]))
+             predict(image_letter),
+             detect_color(image_color),
+             x + BBOX_BOARD[0],
+             y + BBOX_BOARD[1]))
 
         if plot:
             plt.figure()
@@ -150,7 +147,6 @@ def detect_cards(threshold=.95, margin=10, plot=False):
 
 
 def detect_deck(plot=False):
-
     screen = np.array(ImageGrab.grab(BBOX_DECK))
 
     root = 9, 5
@@ -158,8 +154,8 @@ def detect_deck(plot=False):
         root = 9, 27
     if screen[10, 140, 0] > 100:
         root = 9, 48
-    image_letter = screen[root[0]:root[0]+20, root[1]:root[1]+21, :]
-    image_color = screen[root[0]+18:root[0]+35, root[1]+2:root[1]+21, :]
+    image_letter = screen[root[0]:root[0] + 20, root[1]:root[1] + 21, :]
+    image_color = screen[root[0] + 18:root[0] + 35, root[1] + 2:root[1] + 21, :]
 
     letter, color = predict(image_letter), detect_color(image_color)
 
@@ -172,7 +168,7 @@ def detect_deck(plot=False):
         plt.imshow(image_color)
         plt.show()
 
-    return letter, color, BBOX_DECK[0]+root[1]+21, BBOX_DECK[1]+root[0]+20
+    return letter, color, BBOX_DECK[0] + root[1] + 21, BBOX_DECK[1] + root[0] + 20
 
 
 if __name__ == "__main__":

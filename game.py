@@ -75,7 +75,7 @@ class Game:
         if self.deck_size == 0:
             return False
         if self.deck_index == self.deck_size - 1:  # all cards are drown
-            self.log("Deck is empty, clicking to restack cards.")
+            self.log("Deck is empty, clicking to re-stack cards.")
             clic(1040, 160, 1)
             time.sleep(delay)
         clic(1040, 160, 1)

@@ -1,5 +1,5 @@
 from sklearn.neural_network import MLPClassifier
-from sklearn.externals import joblib
+import joblib
 from PIL import Image
 
 import matplotlib.pyplot as plt
@@ -7,14 +7,12 @@ import pandas as pd
 import numpy as np
 import os
 
-
 ANNOTATION_FILE = "annotations.csv"
 CLASSIFIER_FILE = "ocr.pkl"
 SAMPLES_FOLDER = "samples"
 
 
 def annotate():
-
     # create file if it does not exist
     if not os.path.isfile(ANNOTATION_FILE):
         with open(ANNOTATION_FILE, "w") as file:
@@ -45,11 +43,13 @@ def annotate():
         # save it
         df.to_csv(ANNOTATION_FILE, sep=",", index=False)
 
+
 def grey(array):
-    return .289 * array[:,:,0] + .587 * array[:,:,1] + .114 * array[:,:,2]
+    return .289 * array[:, :, 0] + .587 * array[:, :, 1] + .114 * array[:, :, 2]
+
 
 def apply_threshold(image):
-    r, g, b = image[:,:,0], image[:,:,1], image[:,:,2]
+    r, g, b = image[:, :, 0], image[:, :, 1], image[:, :, 2]
     output = np.zeros(r.shape)
     for i in range(len(output)):
         for j in range(len(output[0])):
@@ -59,8 +59,10 @@ def apply_threshold(image):
                 output[i, j] = 1
     return output
 
+
 def normalize(image):
     return np.ravel(apply_threshold(image))
+
 
 def generate_dataset():
     annotations = pd.read_csv(ANNOTATION_FILE)
@@ -70,6 +72,7 @@ def generate_dataset():
         features.append(normalize(image))
         classes.append(row["letter"])
     return np.array(features), classes
+
 
 def train(train_test_ratio=.9):
     features, classes = generate_dataset()
@@ -82,12 +85,15 @@ def train(train_test_ratio=.9):
     joblib.dump(clf, CLASSIFIER_FILE)
     return clf
 
+
 clf = None
 if os.path.isfile(CLASSIFIER_FILE):
     clf = joblib.load(CLASSIFIER_FILE)
 
+
 def predict(image):
     return clf.predict([normalize(image)])[0]
+
 
 if __name__ == "__main__":
     annotate()
