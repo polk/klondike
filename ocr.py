@@ -1,5 +1,6 @@
 from sklearn.neural_network import MLPClassifier
-import joblib
+import joblib as jb
+
 from PIL import Image
 
 import matplotlib.pyplot as plt
@@ -82,13 +83,13 @@ def train(train_test_ratio=.9):
     clf = MLPClassifier()
     clf.fit(x_train, y_train)
     print("Score on test set:", clf.score(x_test, y_test))
-    joblib.dump(clf, CLASSIFIER_FILE)
+    jb.dump(clf, CLASSIFIER_FILE)
     return clf
 
 
 clf = None
 if os.path.isfile(CLASSIFIER_FILE):
-    clf = joblib.load(CLASSIFIER_FILE)
+    clf = jb.load(CLASSIFIER_FILE)
 
 
 def predict(image):

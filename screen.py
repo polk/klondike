@@ -40,7 +40,8 @@ BBOX_BOARD = (960, 270, 1920, 1044)
 BBOX_DECK = (1121, 92, 1300, 136)
 
 
-def generate_template_card(center=(562, 197), radius=10, filename="card.png"):
+# center of the card.png is relative to BBOX_DECK top left
+def generate_template_card(center=(36, 156), radius=10, filename="card.png"):
     screen = np.array(ImageGrab.grab(BBOX_BOARD))
     template = screen[
                center[1] - radius: center[1] + radius,
@@ -51,13 +52,13 @@ def generate_template_card(center=(562, 197), radius=10, filename="card.png"):
 
 def generate_template_colors():
     for stack, image_letter, image_color, x, y in locate_cards():
-        Image.fromarray(image_color).save("{}.png".format(time.time()))
+        Image.fromarray(image_color).save(os.path.join(TEMPLATE_FOLDER, "{}.png".format(time.time())))
 
 
 def generate_samples(rounds):
     index = len(glob.glob(os.path.join(SAMPLES_FOLDER, "*.png")))
     for round in range(rounds):
-        clic(1018, 1006, 1)
+        clic(1046, 178, 1)
         time.sleep(2)
         for stack, image_letter, image_color, x, y in locate_cards():
             Image.fromarray(image_letter).save(os.path.join(SAMPLES_FOLDER, "{}.png".format(index)))
@@ -93,8 +94,8 @@ def locate_cards(threshold=.95, margin=10, plot=False):
             last_pt = pt
 
             # extract images
-            x1, x2 = pt[0] + 8, pt[0] + 29
-            y1, y2 = pt[1] - 122, pt[1] - 102
+            x1, x2 = pt[0] + 14, pt[0] + 34
+            y1, y2 = pt[1] - 118, pt[1] - 98
             image_letter = screen[y1:y2, x1:x2, :]
             image_color = screen[y2 - 2:y2 + 15, x1 + 2:x2, :]
 
