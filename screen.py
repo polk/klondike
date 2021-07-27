@@ -87,17 +87,32 @@ def locate_cards(threshold=.95, margin=10, plot=False):
     matches = cv2.matchTemplate(screen, TEMPLATE_CARD, cv2.TM_CCOEFF_NORMED)
     matches_pruned = np.where(matches >= threshold)
 
+    # using shape() function to get the dimensions of the image
+    # dimensions = matches.shape
+    # print('The dimension of the input image is (h, w): ', dimensions)
+    # print('matches_pruned: ', matches_pruned)
+
     cards = []
     last_pt = -margin, -margin
     for pt in zip(*matches_pruned[::-1]):
         if pt[0] - last_pt[0] >= margin:
             last_pt = pt
 
-            # extract images
-            x1, x2 = pt[0] + 14, pt[0] + 34
-            y1, y2 = pt[1] - 118, pt[1] - 98
+            # extract images: X-width, y-height
+            x1, x2 = pt[0] + 12, pt[0] + 34
+            y1, y2 = pt[1] - 122, pt[1] - 100
             image_letter = screen[y1:y2, x1:x2, :]
-            image_color = screen[y2 - 2:y2 + 15, x1 + 2:x2, :]
+            image_color = screen[y2 - 2:y2 + 17, x1 + 2:x2, :]
+
+            # print(image_letter)
+            # cv2.imshow('letter', image_letter)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+            #
+            # print(image_color)
+            # cv2.imshow('color', image_color)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
 
             # detect column
             min_dist = None
@@ -175,7 +190,7 @@ def detect_deck(plot=False):
 if __name__ == "__main__":
     # generate_template_card()
     # generate_template_colors()
-    # generate_samples(10)
-    detect_cards(plot=True)
+    generate_samples(10)
+    # detect_cards(plot=True)
     # detect_deck(plot=True)
     plt.show(block=True)
