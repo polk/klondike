@@ -190,7 +190,7 @@ def detect_deck(plot=False):
 if __name__ == "__main__":
     # generate_template_card()
     # generate_template_colors()
-    generate_samples(10)
-    # detect_cards(plot=True)
+    # generate_samples(9)
+    detect_cards(plot=True)
     # detect_deck(plot=True)
     plt.show(block=True)
